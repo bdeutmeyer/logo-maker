@@ -1,26 +1,15 @@
 const inquirer = require('inquirer');
-const { writeFile } = require('fs/promises');
+const fs = require('fs');
 const prompts = require('./lib/prompts');
-const { SVG } = require('./lib/classes/svg');
+const generateLogo = require('./lib/generateLogo');
 
 //Function to wrap inquirer so that it's not in the global scope
 function init() {
   inquirer
     .prompt(prompts)
-    .then((response) => {
-      const logoSpecs = JSON.parse(response);
-      const newLogo = new SVG(
-        logoSpecs.text,
-        logoSpecs.textColor,
-        logoSpecs.shape,
-        logoSpecs.shapeColor
-      );
-      const chosenLogo = newLogo.render();
-      return writeFile('logo.svg', chosenLogo);
-    })
-    .then(() => {
-      console.log('Logo created successfully!')
-    })
+    .then((response) =>
+    fs.writeFile('logo.svg', generateLogo(response), (err) =>
+    err ? console.error(err) : console.log('Success!')));
 }
-// Function call to initialize app
+  // Function call to initialize app
 init();
